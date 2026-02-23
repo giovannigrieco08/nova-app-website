@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "78VRA292HA.com.galileimoro.nova",
+        "paths": ["/auth/*", "/auth/callback", "/auth/callback/*"]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["78VRA292HA.com.galileimoro.nova"]
+  }
+}
