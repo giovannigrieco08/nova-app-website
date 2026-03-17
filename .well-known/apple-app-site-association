@@ -3,8 +3,17 @@
     "apps": [],
     "details": [
       {
-        "appID": "78VRA292HA.com.galileimoro.nova",
-        "paths": ["/auth/*", "/auth/callback", "/auth/callback/*"]
+        "appIDs": ["78VRA292HA.com.galileimoro.nova"],
+        "components": [
+          {
+            "/": "/auth/*",
+            "comment": "Magic link authentication"
+          },
+          {
+            "/": "/auth/callback",
+            "comment": "Auth callback"
+          }
+        ]
       }
     ]
   },
