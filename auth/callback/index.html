@@ -119,10 +119,10 @@
     </div>
 
     <div id="manual-state" class="hidden">
-      <p>Tocca il pulsante qui sotto per completare l'accesso nell'app Nova.</p>
+      <p id="manual-message">Tocca il pulsante qui sotto per completare l'accesso nell'app Nova.</p>
       <a href="#" id="open-app-btn" class="btn">Apri Nova</a>
       <p class="help">
-        Non hai l'app? <a href="https://apps.apple.com/app/nova/idXXXXXXXXX" target="_blank">Scaricala qui</a>
+        Non hai l'app? <a href="https://apps.apple.com/it/app/nova/id6740003091" target="_blank">Scaricala qui</a>
       </p>
     </div>
   </div>
@@ -140,47 +140,64 @@
       const openBtn = document.getElementById('open-app-btn');
       openBtn.href = deepLink;
 
-      // Detect iOS/iPadOS
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      // Detect iPad specifically (Safari blocks auto-redirect on iPad)
+      const isIPad = /iPad/.test(navigator.userAgent) ||
+                     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+      // Detect iPhone (auto-redirect usually works)
+      const isIPhone = /iPhone|iPod/.test(navigator.userAgent);
+
+      // Detect any iOS device
+      const isIOS = isIPad || isIPhone;
 
       let appOpened = false;
 
-      // Track if page becomes hidden (app opened)
+      // Track if page becomes hidden (app opened successfully)
       document.addEventListener('visibilitychange', function() {
         if (document.visibilityState === 'hidden') {
           appOpened = true;
         }
       });
 
-      // On iOS, show button immediately as fallback (more reliable)
-      if (isIOS) {
-        // Still try auto-redirect
+      // Helper function to show manual state
+      function showManualState(message) {
+        if (!appOpened && document.visibilityState !== 'hidden') {
+          if (message) {
+            document.getElementById('manual-message').textContent = message;
+          }
+          document.getElementById('loading-state').classList.add('hidden');
+          document.getElementById('manual-state').classList.remove('hidden');
+        }
+      }
+
+      // iPad: Show button IMMEDIATELY (Safari blocks auto-redirect)
+      if (isIPad) {
+        // Show button right away with iPad-specific message
+        showManualState('Tocca il pulsante per aprire Nova e completare l\'accesso.');
+      }
+      // iPhone: Try auto-redirect, fallback to button
+      else if (isIPhone) {
+        // Try auto-redirect
         setTimeout(function() {
           window.location.href = deepLink;
         }, 100);
 
-        // But show button quickly as fallback
+        // Show button after short delay as fallback
         setTimeout(function() {
-          if (!appOpened && document.visibilityState !== 'hidden') {
-            document.getElementById('loading-state').classList.add('hidden');
-            document.getElementById('manual-state').classList.remove('hidden');
-          }
+          showManualState();
         }, 1500);
-      } else {
-        // Non-iOS: try location redirect
+      }
+      // Non-iOS: Try auto-redirect
+      else {
         window.location.href = deepLink;
 
         // Show manual button after delay
         setTimeout(function() {
-          if (!appOpened && document.visibilityState !== 'hidden') {
-            document.getElementById('loading-state').classList.add('hidden');
-            document.getElementById('manual-state').classList.remove('hidden');
-          }
+          showManualState();
         }, 2500);
       }
 
-      // Add click handler for manual button (extra reliability)
+      // Manual button click handler
       openBtn.addEventListener('click', function(e) {
         e.preventDefault();
         window.location.href = deepLink;

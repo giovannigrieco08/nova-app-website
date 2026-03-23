@@ -3,6 +3,10 @@
     "apps": [],
     "details": [
       {
+        "appID": "78VRA292HA.com.galileimoro.nova",
+        "paths": ["/auth/*", "/auth/callback"]
+      },
+      {
         "appIDs": ["78VRA292HA.com.galileimoro.nova"],
         "components": [
           {
